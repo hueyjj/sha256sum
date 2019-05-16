@@ -5,6 +5,10 @@ import (
 	"fmt"
 )
 
+func rightRotate(value uint32, shift uint) uint32 {
+	return (value >> shift) | (value << (32 - shift))
+}
+
 // Sha256Sum generates a SHA-256 hash of a file
 // Based off of the algorithm in the wikipedia:
 // https://en.wikipedia.org/wiki/SHA-2#Pseudocode
@@ -40,7 +44,6 @@ func Sha256Sum(msg string) (string, error) {
 	blength := make([]byte, 8)
 	binary.BigEndian.PutUint64(blength, length*8)
 	bmsg = append(bmsg, blength...)
-	fmt.Printf("%x\n", bmsg)
 
 	w := make([]uint32, 64)
 	for i, j := 0, 0; i < 16; i, j = i+1, j+4 {
@@ -48,8 +51,8 @@ func Sha256Sum(msg string) (string, error) {
 	}
 
 	for i := 16; i < 64; i++ {
-		s0 := (w[i-15] >> 7) ^ (w[i-15] >> 18) ^ (w[i-15] >> 3)
-		s1 := (w[i-2] >> 17) ^ (w[i-2] >> 19) ^ (w[i-2] >> 10)
+		s0 := rightRotate(w[i-15], 7) ^ rightRotate(w[i-15], 18) ^ (w[i-15] >> 3)
+		s1 := rightRotate(w[i-2], 17) ^ rightRotate(w[i-2], 19) ^ (w[i-2] >> 10)
 		w[i] = w[i-16] + s0 + w[i-7] + s1
 	}
 
@@ -63,10 +66,10 @@ func Sha256Sum(msg string) (string, error) {
 	h := h7
 
 	for i := 0; i < 64; i++ {
-		S1 := (e << 6) ^ (e >> 11) ^ (e >> 25)
+		S1 := rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)
 		ch := (e & f) ^ (^e & g)
 		temp1 := h + S1 + ch + k[i] + w[i]
-		S0 := (a >> 2) ^ (a >> 13) ^ (a >> 22)
+		S0 := rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)
 		maj := (a & b) ^ (a & c) ^ (b & c)
 		temp2 := S0 + maj
 
@@ -87,7 +90,6 @@ func Sha256Sum(msg string) (string, error) {
 	h5 = h5 + f
 	h6 = h6 + g
 	h7 = h7 + h
-	digest := fmt.Sprintf("%x %x %x %x %x %x %x %x", h0, h1, h2, h3, h4, h5, h6, h7)
-	fmt.Println(digest)
-	return "", nil
+	digest := fmt.Sprintf("%x%x%x%x%x%x%x%x", h0, h1, h2, h3, h4, h5, h6, h7)
+	return digest, nil
 }
