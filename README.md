@@ -12,10 +12,11 @@ $ go test
 ```
 ```go
 import (
-    github.com/hueyjj/sha256sum
+    "fmt"
+    "github.com/hueyjj/sha256sum"
 )
 
 func main() {
-	fmt.Println(Sha256Sum("./somefilehere"))
+    fmt.Println(sha256sum.Sha256Sum("./somefilehere"))
 }
 ```

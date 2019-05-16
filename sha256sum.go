@@ -26,8 +26,8 @@ func rightRotate(value uint32, shift uint) uint32 {
 func preProcess(msg []byte, length uint) []byte {
 	msg = msg[:length]      // The 64 byte buffer fills everything with zero, we don't want those zeroes
 	K := 448 - 8*length - 1 // K, the number of zeroes for padding to 512-bit
-	fmt.Println("length:", length)
-	fmt.Println("K:", K)
+	// fmt.Println("length:", length)
+	// fmt.Println("K:", K)
 	padding := make([]byte, K/8)
 	size := make([]byte, 8)
 	binary.BigEndian.PutUint64(size, 8*uint64(length))
@@ -35,8 +35,8 @@ func preProcess(msg []byte, length uint) []byte {
 	msg = append(msg, 0x80)       // Add 1 bit
 	msg = append(msg, padding...) // Add zero paddings
 	msg = append(msg, size...)    // Add big-endian size of message
-	fmt.Println("len(msg):", len(msg))
-	fmt.Println(msg)
+	// fmt.Println("len(msg):", len(msg))
+	// fmt.Println(msg)
 	return msg
 }
 
